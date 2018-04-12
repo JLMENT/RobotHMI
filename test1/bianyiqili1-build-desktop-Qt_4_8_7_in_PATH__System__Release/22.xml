@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<commendlist>
+    <NOP>NOP</NOP>
+    <JUMP>
+        <LabelNumber>1</LabelNumber>
+        <IF>1</IF>
+        <varType>DIN</varType>
+        <varAddress>11</varAddress>
+        <compareSign>></compareSign>
+        <compareValue>ON</compareValue>
+    </JUMP>
+    <JUMP>
+        <LabelNumber>1</LabelNumber>
+        <IF>1</IF>
+        <varType>DIN</varType>
+        <varAddress>11</varAddress>
+        <compareSign>></compareSign>
+        <compareValue>ON</compareValue>
+    </JUMP>
+    <RET>RET</RET>
+</commendlist>

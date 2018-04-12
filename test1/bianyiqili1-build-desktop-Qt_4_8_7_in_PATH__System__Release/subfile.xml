@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<commendlist>
+	<NOP>NOP</NOP>
+	<movj>
+		<positon>P001</positon>
+		<vj>0.1</vj>
+		<pl>0</pl>
+		<untill>1</untill>
+		<ioselect>DIN</ioselect>
+		<ionumber>1</ionumber>
+		<ioprepare>></ioprepare>
+		<iovalue>1</iovalue>
+		<ioio>ON</ioio>
+		<acc>1</acc>
+		<dec>1</dec>
+		<nwait>1</nwait>
+    </movj>
+    <movj>
+		<positon>P002</positon>
+		<vj>0.1</vj>
+		<pl>0</pl>
+		<untill>1</untill>
+		<ioselect>DIN</ioselect>
+		<ionumber>1</ionumber>
+		<ioprepare>></ioprepare>
+		<iovalue>1</iovalue>
+		<ioio>ON</ioio>
+		<acc>1</acc>
+		<dec>1</dec>
+		<nwait>1</nwait>
+    </movj>
+	<RET>RET</RET>
+</commendlist>	

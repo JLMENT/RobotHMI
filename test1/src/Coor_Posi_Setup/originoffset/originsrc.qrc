@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>originoffsetimage/1.png</file>
+        <file>originoffsetimage/11.png</file>
+        <file>originoffsetimage/1-24.png</file>
+        <file>originoffsetimage/3-4-1.png</file>
+        <file>originoffsetimage/3-3.png</file>
+        <file>originoffsetimage/3-3-1.png</file>
+        <file>originoffsetimage/3-2.png</file>
+        <file>originoffsetimage/3-2-1.png</file>
+        <file>originoffsetimage/3-1.png</file>
+        <file>originoffsetimage/3-1-1.png</file>
+        <file>originoffsetimage/3-4.png</file>
+        <file>originoffsetimage/3-5-1.png</file>
+        <file>originoffsetimage/3-5.png</file>
+        <file>originoffsetimage/3-6-1.png</file>
+        <file>originoffsetimage/3-6.png</file>
+        <file>originoffsetimage/3-7-1.png</file>
+        <file>originoffsetimage/3-8-1.png</file>
+        <file>originoffsetimage/3-8.png</file>
+        <file>originoffsetimage/3-7.png</file>
+        <file>originoffsetimage/3-9-1.png</file>
+        <file>originoffsetimage/3-9.png</file>
+    </qresource>
+</RCC>

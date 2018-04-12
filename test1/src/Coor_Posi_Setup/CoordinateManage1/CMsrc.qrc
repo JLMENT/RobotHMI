@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>CMimage/Origionbias.png</file>
+        <file>CMimage/xy1.png</file>
+        <file>CMimage/zx1.png</file>
+        <file>CMimage/disnable.png</file>
+        <file>CMimage/enable.png</file>
+    </qresource>
+</RCC>

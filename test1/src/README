@@ -1,0 +1,22 @@
+# README!
+# Hello, Guys. Let`s do it.
+# Copy source code that`s yours into current `$PWD` where The README was in.
+# Please make sure your code clear, and then:
+
+# 1. Build environment
+$ mkdir ~/release -p
+$ svn co https://wbffs01.volboff.com/svn/release
+$ cd release/controller/rtos/V1.0.1
+$ find *.xz | awk -F '.' '{system("tar xf "$0); system("sudo cp -rf "$1"/* /"); system("rm -rf "$1);}'
+$ sudo ldconfig
+
+# 2. build Pro
+$ cd ~/ctlsys/trunk/src
+$ source env-ctlsys x86
+$ cd ~/ctlsys/trunk/src/gui/src
+$ cd ../
+$ pwd
+$ */src/gui
+$ make clean;
+$ make V=1 -j2
+$ sudo ./ctlsys_gui

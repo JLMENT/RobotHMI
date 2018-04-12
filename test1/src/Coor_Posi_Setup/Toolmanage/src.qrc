@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>toolimage/toolwrite.png</file>
+    </qresource>
+</RCC>

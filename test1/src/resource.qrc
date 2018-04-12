@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/Add.png</file>
+        <file>image/img0.jpg</file>
+        <file>image/status1.jpg</file>
+        <file>image/User.ico</file>
+        <file>image/imag1.jpg</file>
+        <file>image/imag2.jpg</file>
+        <file>image/coordinate1.jpg</file>
+        <file>image/coordinate3.jpg</file>
+        <file>image/dh1.jpg</file>
+    </qresource>
+</RCC>
