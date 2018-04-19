@@ -324,7 +324,8 @@ void NumericTypeXml::findvalue1(QString valuestyle, QString variate)
         list11 = n1.childNodes();
         if(list11.at(0).toElement().text()==variate)
         {
-            variatevalue = list11.at(0).toElement().text();
+            //variatevalue = list11.at(0).toElement().text();
+            content = list11.at(1).toElement().text();
         }
     }
 

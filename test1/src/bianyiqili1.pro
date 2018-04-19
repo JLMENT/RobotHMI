@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = bianyiqi1
 TEMPLATE = app
+DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
@@ -113,6 +114,7 @@ include ($$PWD/Coor_Posi_Setup/originoffset/originoffset.pri)
 include ($$PWD/Coor_Posi_Setup/currentposition/currentposition.pri)
 include ($$PWD/Coor_Posi_Setup/CoordinateManage1/CoordinateManage1.pri)
 include ($$PWD/Coor_Posi_Setup/Toolmanage/Toolmanage.pri)
+
 
 
 RESOURCES += \

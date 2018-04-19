@@ -26,7 +26,7 @@
 #include <QtGui/QTextEdit>
 #include <QtGui/QToolBar>
 #include <QtGui/QWidget>
-#include "codeeditor.h"
+#include "codeeditor/codeeditor.h"
 
 QT_BEGIN_NAMESPACE
 
