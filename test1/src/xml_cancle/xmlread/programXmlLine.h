@@ -133,7 +133,6 @@ typedef struct
     int                 IoPort;
     DigitalValue        dOutValue;          //ON OFF
     int                 byteAddress;        //DIN store variable address
-    QString             positionstring;     //pc:save position value eg:p003
 
 }ProgramXmlLine;
 

@@ -5,11 +5,11 @@
 #include <QtCore>
 #include <QDebug>
 #include <QtXml>
-#include "xml_cancle/xmlread/opXmlErrorType.h"
-#include "xml_cancle/xmlread/programXmlLine.h"
-#include "xml_cancle/xmlread/xmlTagName.h"
+#include "opXmlErrorType.h"
+#include "programXmlLine.h"
+#include "xmlTagName.h"
 
-#define OP_PROGRAM_DEBUG            0x03
+#define OP_PROGRAM_DEBUG            0x00
 #define OP_PROGRAM_DEBUG_ERROR      0x01
 #define OP_PROGRAM_DEBUG_INFOR      0x02
 

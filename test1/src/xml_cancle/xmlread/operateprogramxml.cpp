@@ -1,4 +1,4 @@
-#include "xml_cancle/xmlread/operateprogramxml.h"
+#include "operateprogramxml.h"
 
 
 
@@ -529,12 +529,9 @@ int OperateProgramXml::readPosition(QDomNode position,Position *out)
 
     while(!position.toElement().isNull())
     {
-        qDebug()<<"INTO WHILE";
-        qDebug()<<position.toElement().tagName();
         if(position.toElement().tagName() == XML_TAG_NAME_POSITION )
         {
             QString     pName = position.toElement().text();
-            line.positionstring = pName;
             if(OP_PROGRAM_DEBUG&OP_PROGRAM_DEBUG_INFOR)
             {
                 qDebug()<<"read Position: find tag named position" << pName;

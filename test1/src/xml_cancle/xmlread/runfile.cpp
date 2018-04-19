@@ -1,8 +1,9 @@
-#include "xml_cancle/xmlread/runfile.h"
-#include "usr_motion_api/usr_motion_api.h"
-#include "xml_cancle/xmlread/opXmlErrorType.h"
+#include "runfile.h"
+#include "usr_motion_api.h"
+#include "opXmlErrorType.h"
 RunFile::RunFile(QString fileName)
 {
+	//初始化状态
     this->fileName = fileName;
     exe[COMMAND_MOVJ_TYPE]=&RunFile::exeMovj;
     exe[COMMAND_MOVL_TYPE]=&RunFile::exeMovl;
@@ -25,6 +26,7 @@ RunFile::RunFile(QString fileName)
     state = 0;
     inverse = 0;
     runFilePause = 0;
+    line.commandType = COMMAND_NONE_TYPE;
 }
 bool RunFile::init()
 {
@@ -49,50 +51,80 @@ bool RunFile::init(int lineNumber, int mode)
     inverse = mode;
     init();
 }
-
 void RunFile::run()
 {
     int ret = 0;
-    scanLabel();
-
-    //qDebug() << "line.commandType = " << line.commandType << "state = " << state ;
-    while((line.commandType!=COMMAND_END_TYPE)&&(!state))
+	//执行整个文件之前扫描一遍整个文件的label。
+	scanLabel();
+	//初始化保存读取文件信息的命令类型为未读取
+    line.commandType = COMMAND_NONE_TYPE;
+    
+	//正向运行时，一直执行到遇到END，
+	//逆向运行时，一直执行到遇到NOP。
+    while(((line.commandType!=COMMAND_END_TYPE)&&(!state)&&(!inverse))
+          ||
+          ((line.commandType!=COMMAND_NOP_TYPE)&&(!state)&&(inverse)))
     {
-        if(!runFilePause)
+  	  //判断运行是否暂停
+      if(!runFilePause)
+      {
+        //判断是否为逆向运行
+        if(!inverse)
         {
-            //qDebug() << "inverse is " << inverse;
-            if(!inverse)
+          	//正向
+            ret = exeLine(currentFileLine);
+            if(ret)
             {
-                ret = exeLine(currentFileLine);
-                if(ret)
-                {
-                    break;
-                }
-                currentFileLine++;
+            	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_ERROR)
+        		{
+            		qDebug()<<"failed to forward exe line =   " << currentFileLine<< ", errocode is " << ret;
+        		}
+                break;
             }
-            else
-            {
-                ret = exeInverseLine(currentFileLine);
-                if(ret)
-                {
-                    break;
-                }
-                currentFileLine--;
-            }
+            currentFileLine++;
         }
+        else
+        {
+        	//逆向
+            ret = exeInverseLine(currentFileLine);
+            if(ret)
+            {
+              	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_ERROR)
+        		{
+            		qDebug()<<"failed to inverse exe line =   " << currentFileLine<< ", errocode is " << ret;
+        		}
+                break;
+            }
+            currentFileLine--;
+        }
+
+      }
         msleep(100);
     }
-    //qDebug() << "exiting this thread";
+	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INFOR)
+    {
+    	qDebug() << "exiting this thread";
+    }    
 }
 void RunFile::stop()
-{
+{	
+	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INFOR)
+    {
+    	qDebug() << "Runfile : stopping the thread";
+    } 
     state = 1;
 }
 int RunFile::exeLine(int lineNumber)
 {
     int ret =0;
+	//从文件中读取某一行，放入到line中
     ret = op->readLine(lineNumber);
     line = op->getLine();
+	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INFOR)
+    {
+	    qDebug("RunFile: exeLine commandType = %d",line.commandType);
+    } 
+    
     if(ret)
     {
         if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_ERROR)
@@ -101,9 +133,15 @@ int RunFile::exeLine(int lineNumber)
         }
         return ret;
     }
+	//如果命令类型不是运动指令，那需要等待运动执行完成。
     if(line.commandType > COMMAND_MOVC_TYPE)
     {
         waitForMotion();
+    }
+	//如果读取的命令类型不是MOVC，那就将从新记录MOVC的计数。
+    if(line.commandType!=COMMAND_MOVC_TYPE)
+    {
+      movcCount = 0;
     }
     ExeLine run = exe[line.commandType];
     ret = (this->*run)(lineNumber);
@@ -122,7 +160,7 @@ int RunFile::exeMovj(int lineNumber)
         }
         return CAN_NOT_DO_MOVJ_BEFORE_END_OF_MOVC;
     }
-    movcCount = 0;
+    //movcCount = 0;
     JointMoveInformation mj;
     if(line.p.coord == JOINT)
     {
@@ -178,8 +216,8 @@ int RunFile::exeMovl(int lineNumber)
         }
         return CAN_NOT_DO_MOVL_BEFORE_END_OF_MOVC;
     }
-    movcCount = 0;
-
+    //movcCount = 0;
+	//判断输入位置的坐标系类型，选择对应的motion接口。
     if(line.p.coord == JOINT)
     {
         LinearMoveInformation ml;
@@ -326,6 +364,8 @@ int RunFile::exeMovc(int lineNumber)
     CircularMoveInformation mc;
     CircularDescartesMoveInformation dmc;
     static JointPoint position[3];
+	//连续3条movc才可以下发一条运动指令。
+	//其中3条movc的输入位置参数类型必须是一致的。
     if(movcCount == 0 )
     {
         jointType = line.p.coord;
@@ -334,6 +374,7 @@ int RunFile::exeMovc(int lineNumber)
     {
         return MOVC_POSTION_TYPE_CONFLIC;
     }
+	//当连续输入5条movc时，可以将第3条movc的指令当作第二段圆弧中的第一条
     else if(movcCount == 3)
     {
         position[0] = position[2];
@@ -346,7 +387,7 @@ int RunFile::exeMovc(int lineNumber)
     position[movcCount-1].j4 = line.p.p[3];
     position[movcCount-1].j5 = line.p.p[4];
     position[movcCount-1].j6 = line.p.p[5];
-
+	//记录movc中的位置信息，在最后一条movc中才会真正执行运动指令。
 
     if(movcCount == 3)
     {
@@ -519,11 +560,10 @@ int RunFile::exePause(int lineNumber)
     int condition = 0;
 
     condition = exeCondition();
-
+	//进入到这个函数当中，整个线程不会执行其它东西。会一直阻塞在这里。一直到pause被置为1。
     while(condition&&(!state))
     {
         msleep(100);
-        //qDebug()<<"inter pause!";
         if(pause)
         {
             condition = 0;
@@ -534,10 +574,12 @@ int RunFile::exePause(int lineNumber)
 }
 int RunFile::exeTimer(int lineNumber)
 {
+   // movcCount = 0;
     double mtime = line.time*1000;
     QTime start = QTime::currentTime();
     QTime end = QTime::currentTime();
-    while(start.msecsTo(end) < mtime)
+	//进入到执行计时器函数中，开始计时，一直到时间达到预定才会推出去。或者state就是执行状态表示整个线程表示停止也会推出。
+    while((start.msecsTo(end) < mtime)&&(!state))
     {
         //qDebug() << "timer start = " <<start <<"end = " <<end <<"mtime = " << mtime;
         //qDebug() << "time lasting is " <<start.msecsTo(end);
@@ -554,6 +596,8 @@ int RunFile::exeJump(int lineNumber)
 {
     int condition = 0;
     condition = exeCondition();
+	//从标签容器中找到匹配的标签，将当前行指向标签的当前行。
+	//这里未考虑在执行子程序调用对标签容器的影响。应该会有一个bug。
     if(condition)
     {
         int fileLine;
@@ -574,20 +618,23 @@ int RunFile::exeCall(int lineNumber)
     if(condition)
     {
         SubFile sub;
+		//将当前的程序文件的信息记录，并压入到链表当中
         sub.fileLine = currentFileLine;
         sub.fileName = this->fileName;
         subList.prepend(sub);
-        //qDebug() << "call sub file = " << line.fileName;
-        ret = op->init(line.fileName);
+		qDebug() << "call sub file = " << line.fileName;
+		//打开子程序
+		ret = op->init(line.fileName);
         this->fileName = line.fileName;
         currentFileLine = 0;
+		//扫描子程序标签。
+		scanLabel();
         if(ret)
         {
             return false;
         }
     }
-    emit FileNameChanged1(this->fileName);
-    qDebug()<<"emit FileNameChanged1(this->fileName);";
+  // Q_EMIT FileNameChanged(this->fileName);
     return 0;
 }
 int RunFile::exeRet(int lineNumber)
@@ -595,36 +642,40 @@ int RunFile::exeRet(int lineNumber)
     int condition = 0;
     int ret =0 ;
     condition = exeCondition();
+	//执行返回
     if(condition)
     {
+    	//从文件链表中读取最后一个，回复其信息，并且将它的信息从链表中移除
         SubFile sub;
         sub = subList.first();
         subList.removeFirst();
         this->fileName = sub.fileName;
         this->currentFileLine = sub.fileLine;
-        //qDebug() << "return to file " << this->fileName <<"at line " << this->currentFileLine;
+        qDebug() << "return to file " << this->fileName <<"at line " << this->currentFileLine;
         ret = op->init(fileName);
+		//重新扫描标签。
+		scanLabel();
         if(ret)
         {
-            //qDebug() << "open file error " <<ret;
+            qDebug() << "open file error " <<ret;
             return false;
         }
     }
-    emit FileNameChanged1(this->fileName);
-    qDebug()<<"emit FileNameChanged1(this->fileName);";
+    //Q_EMIT FileNameChanged(this->fileName);
     return 0;
 }
 int RunFile::exeNop(int lineNumber)
 {
+    qDebug("RunFile: exeNope");
     return 0;
 }
 int RunFile::exeEnd(int lineNumber)
 {
-    emit FileClosed1();
+   // Q_EMIT FileClosed();
     return 0;
 }
 
-
+//循环启动按键接口
 void RunFile::setPause()
 {
     pause = 1;
@@ -634,7 +685,9 @@ void RunFile::scanLabel()
 {
     int i =0;
     int ret;
-    for(;line.commandType!= COMMAND_END_TYPE;)
+	//扫描整个文件中的label到指定容器中，
+	//这里未考虑到子程序文件，在主程序中，扫描到END，在子程序中扫描到RET。
+    for(;line.commandType!= COMMAND_END_TYPE&&line.commandType!= COMMAND_RET_TYPE;)
     {
         ret = op->readLine(i);
         if(ret)
@@ -646,7 +699,6 @@ void RunFile::scanLabel()
             break;
         }
         line = op->getLine();
-
         if(line.commandType == COMMAND_LABEL_TYPE)
         {
             labelMap.insert(QString(line.lablel),i);
@@ -732,40 +784,106 @@ int RunFile::exeCondition()
 }
 int RunFile::exeInverseLine(int lineNumber)
 {
+
     int ret =0;
+	int i=lineNumber - 1;
     ret = op->readLine(lineNumber);
+    qDebug("read lineNumber = %d",lineNumber);
     line = op->getLine();
     if(ret)
     {
         return ret;
     }
+	//逆向执行。首先逆向运行的思路是不能执行跳转，子程序调用。其他命令都可以执行。
+	//在逆向运行的过程中，movc就正常按读取到的指令执行。movj和movl需要执行上一个运动位置的终点位置。
+	//
+
+	
     if(line.commandType > COMMAND_MOVC_TYPE)
     {
+    	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INVERSE)
+        {
+        	qDebug()<<"inverse : exe %d " << line.commandType;
+        }
         waitForMotion();
     }
-    if(line.commandType <= COMMAND_MOVC_TYPE)
+    if((line.commandType == COMMAND_LABEL_TYPE)||
+       (line.commandType == COMMAND_JUMP_TYPE)||
+       (line.commandType == COMMAND_CALL_TYPE)||
+       (line.commandType == COMMAND_RET_TYPE))
     {
-        ProgramXmlLine lastLine;
-        lastLine.commandType = COMMAND_NONE_TYPE;
-        while(lastLine.commandType != COMMAND_MOVJ_TYPE&&
-              lastLine.commandType != COMMAND_MOVL_TYPE&&
-              lastLine.commandType != COMMAND_MOVC_TYPE)
+      return 0;
+    }
+    if(
+       line.commandType == COMMAND_MOVL_TYPE||
+       line.commandType == COMMAND_MOVJ_TYPE
+       )
+    {
+       	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INVERSE)
         {
-            int i=lineNumber - 1;
+        	qDebug()<<"inverse : exe %d " << line.commandType;
+        }
+		//在逆向执行时，当下面一行(行号大1的行)为movc时，有可能会造成正向和逆向运动结果不一样。
+		//所以这里，在这种情况下在movj或者时movl中添加一行直线命令进行过渡
+        if(nextLine.commandType == COMMAND_MOVC_TYPE)
+        {
+            if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INVERSE)
+        	{
+        		qDebug()<<"inverse : exe %d"<< line.commandType<<"and the nextline is MOVC" ;
+        	}
+          ExeLine run = exe[line.commandType];
+          ret = (this->*run)(lineNumber);
+        }
+        ProgramXmlLine lastLine;	//当前行的上面一行，如果行号未5，则lastLine为4.
+        lastLine.commandType = COMMAND_NONE_TYPE;
+		//movj 与 movl需要读取上一条运动指令的终点位置值。
+        while((lastLine.commandType != COMMAND_MOVJ_TYPE)&&
+              (lastLine.commandType != COMMAND_MOVL_TYPE)&&
+              (lastLine.commandType != COMMAND_MOVC_TYPE)&&(!state))
+        {
             ret = op->readLine(i);
+			if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INVERSE)
+        	{
+        		qDebug()<<"inverse : reading from last line.number = " << i;
+        	}
             if(ret)
             {
+                if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INVERSE)
+        		{
+        			qDebug()<<"inverse : failed to read lastline ret = " << ret;
+        		}
                 return ret;
             }
             lastLine = op->getLine();
+			//如果上一行是运动指令，将位置信息记录在当前行的位置信息上。
             if(lastLine.commandType == COMMAND_MOVJ_TYPE||
                lastLine.commandType == COMMAND_MOVL_TYPE||
                lastLine.commandType == COMMAND_MOVC_TYPE)
             {
+            	if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INVERSE)
+        		{
+        			qDebug()<<"inverse : read move command type = " << lastLine.commandType;
+        		}
                 line.p = lastLine.p ;
             }
+			//如果读到了NOP，表示已经读取到了文件的第一行，那就不能在继续了。
+			if(lastLine.commandType == COMMAND_NOP_TYPE)
+			{
+				return 0;
+			}
+			//否则继续向前读取。
             i--;
         }
+    }
+    if(line.commandType == COMMAND_MOVJ_TYPE||
+       line.commandType == COMMAND_MOVL_TYPE||
+       line.commandType == COMMAND_MOVC_TYPE)
+    {
+      nextLine = line;
+    }
+    if(line.commandType!=COMMAND_MOVC_TYPE)
+    {
+      movcCount = 0;
     }
     ExeLine run = exe[line.commandType];
     ret = (this->*run)(lineNumber);
@@ -788,8 +906,7 @@ int RunFile::getCurrentNumber()
 {
   return currentFileLine;
 }
-
 void RunFile::interpPause()
 {
-    runFilePause = 1;
+  runFilePause = 1;
 }
