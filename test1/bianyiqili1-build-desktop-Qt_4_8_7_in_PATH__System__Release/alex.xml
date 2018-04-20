@@ -1,14 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <commendlist>
 	<NOP>NOP</NOP>
-	<CALL>
-		<fileName>subfile</fileName>
-		<IF>0</IF>
-		<varType>DIN</varType>
-		<varAddress>03</varAddress>
-		<compareSign>=</compareSign>
-		<compareValue>ON</compareValue>	
-	</CALL>
 	<movj>
 		<positon>P001</positon>
 		<vj>0.1</vj>
@@ -23,6 +15,9 @@
 		<dec>1</dec>
 		<nwait>1</nwait>
     </movj>
+    <TIMER>
+		<T>6.5</T>
+	</TIMER>
     <movl>
         <positon>P002</positon>
         <vl>100</vl>
@@ -43,6 +38,9 @@
         <tool>1</tool>
         <toolvalue>TOOL1</toolvalue>
     </movl>
+	<TIMER>
+		<T>6.5</T>
+	</TIMER>
     <movc>
         <positon>P003</positon>
         <vl>100</vl>

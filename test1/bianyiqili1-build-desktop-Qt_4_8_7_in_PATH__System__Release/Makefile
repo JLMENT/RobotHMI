@@ -10,7 +10,7 @@
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
+DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DQT3_SUPPORT
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
 INCPATH       = -I/usr/share/qt4/mkspecs/linux-g++ -I../src -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtXml -I/usr/include/qt4 -I../src/keyboardedit -I../src/numeric_type_module -I../src/robot_setup/parametersofspaceofaxialjoint -I../src/robot_setup/descartesspace -I../src/robot_setup/cpspacesetup -I../src/robot_setup/othersetup -I../src/robot_setup/DHSpace -I../src/Coor_Posi_Setup/originoffset -I../src/Coor_Posi_Setup/currentposition -I../src/Coor_Posi_Setup/CoordinateManage1 -I../src/Coor_Posi_Setup/Toolmanage -I. -I. -I../src -I.

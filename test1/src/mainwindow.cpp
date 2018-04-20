@@ -1585,8 +1585,10 @@ void MainWindow::send_current_line_slot()
     if(current_row==0||(total_row-1)==current_row)
         return;
 
+    qDebug()<< "opening the file" << program_filename;
     run_file = new RunFile(program_filename);
-    run_file->init();
+    qDebug()<< "executing the file" << program_filename;
+    //run_file->init();
     run_file->exeLine(current_row);
 
     free(run_file);
@@ -1885,6 +1887,7 @@ void MainWindow::multin_release_send_line_slot()
 void MainWindow::test_run_slot()
 {
     int current_row,total_row;
+    bool communication;
     //static bool movc_send_victory_flag = true;
     current_row = ui->plainTextEdit->textCursor().blockNumber();
     total_row = ui->plainTextEdit->blockCount();
@@ -1892,7 +1895,14 @@ void MainWindow::test_run_slot()
     if(current_row==0||(total_row-1)==current_row)
         return;
     run_file = new RunFile(program_filename);
-    connect(run_file,SIGNAL(FileNameChanged1(QString)),this,SLOT(display_changed_file(QString)));
+
+
+
+    communication = connect(run_file,SIGNAL(FileNameChanged1(QString)),this,SLOT(display_changed_file(QString)));
+
+    qDebug()<<"commmunication Success!!!!!!!!!!!!!!!!!!!!!";
+    qDebug()<<communication;
+
     connect(run_file,SIGNAL(FileClosed1()),this,SLOT(file_run_end()));
     run_file->init();
     run_file->start();

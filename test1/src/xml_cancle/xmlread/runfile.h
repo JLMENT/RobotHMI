@@ -1,11 +1,11 @@
 #ifndef RUNFILE_H
 #define RUNFILE_H
 #include <QThread>
-#include <operateprogramxml.h>
+#include <xml_cancle/xmlread/operateprogramxml.h>
 #include <QMap>
 #include "subFile.h"
 
-#define RF_PROGRAM_DEBUG            0x03
+#define RF_PROGRAM_DEBUG            0x05
 #define RF_PROGRAM_DEBUG_ERROR      0x01
 #define RF_PROGRAM_DEBUG_INFOR      0x02
 #define RF_PROGRAM_DEBUG_INVERSE	0x03
@@ -14,7 +14,7 @@ class RunFile;
 typedef int (RunFile::*ExeLine)(int lineNumber);
 class RunFile : public QThread
 {
-//Q_OBJECT
+    Q_OBJECT
 public:
     RunFile(QString fileName);      //构造函数，fileName表示需要运行的文件名
     //virtual ~RunFile();
@@ -70,6 +70,10 @@ private:
 //Q_SIGNALS:
 //    void FileNameChanged(QString fileName);
 //    void FileClosed();
+
+signals:
+    void FileNameChanged1(QString fileName);
+    void FileClosed1();
 
 };
 

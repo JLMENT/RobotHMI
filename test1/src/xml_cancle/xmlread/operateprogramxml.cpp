@@ -4,6 +4,7 @@
 
 OperateProgramXml::OperateProgramXml()
 {
+    qDebug()<<"start operateprogramXml";
     readParamFun[COMMAND_MOVJ_TYPE]=&OperateProgramXml::readMovj;
     readParamFun[COMMAND_MOVL_TYPE]=&OperateProgramXml::readMovl;
     readParamFun[COMMAND_MOVC_TYPE]=&OperateProgramXml::readMovc;

@@ -124,7 +124,7 @@ void DHSpaceParem::dhsave()
     for(i=0;i<13;++i)
     {
         //ConfigSet::settrings.setValue("dhparem/num"+QString::number(i+1,10),edit[i+13]->text());
-        if(i<=0&&i<5)//add robot setup 20180321
+        if(i>=0&&i<5)//add robot setup 20180321
         {
             str = edit[i+13]->text();
             CTRL_SetPUMA(str.toDouble(),i+1);

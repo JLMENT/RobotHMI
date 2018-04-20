@@ -1,9 +1,11 @@
 #include "runfile.h"
-#include "usr_motion_api.h"
+#include "usr_motion_api/usr_motion_api.h"
 #include "opXmlErrorType.h"
 RunFile::RunFile(QString fileName)
 {
+    int ret;
 	//初始化状态
+    qDebug()<<"RunFile construct start";
     this->fileName = fileName;
     exe[COMMAND_MOVJ_TYPE]=&RunFile::exeMovj;
     exe[COMMAND_MOVL_TYPE]=&RunFile::exeMovl;
@@ -23,25 +25,29 @@ RunFile::RunFile(QString fileName)
     pause = 0;
     currentFileLine = 0;
     op = new OperateProgramXml();
-    state = 0;
-    inverse = 0;
-    runFilePause = 0;
-    line.commandType = COMMAND_NONE_TYPE;
-}
-bool RunFile::init()
-{
-    int ret = 0;
-    // open file ,
-    ret = op->init(fileName);
-    //currentFileLine = 0;
+    if(op!=NULL)
+    {
+        ret = op->init(fileName);
+    }
     if(ret)
     {
         if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_ERROR)
         {
             qDebug()<<"failed to open file  " << fileName << " errocode is " << ret;
         }
-        return ret;
     }
+    state = 0;
+    inverse = 0;
+    runFilePause = 0;
+    line.commandType = COMMAND_NONE_TYPE;
+    qDebug()<<"RunFile construct end";
+}
+bool RunFile::init()
+{
+    int ret = 0;
+    // open file ,
+
+    //currentFileLine = 0;
     start();
     return true;
 }
@@ -117,6 +123,10 @@ void RunFile::stop()
 int RunFile::exeLine(int lineNumber)
 {
     int ret =0;
+    if(RF_PROGRAM_DEBUG&RF_PROGRAM_DEBUG_INFOR)
+    {
+        qDebug("RunFile: exeLine line = %d",lineNumber);
+    }
 	//从文件中读取某一行，放入到line中
     ret = op->readLine(lineNumber);
     line = op->getLine();
@@ -635,6 +645,7 @@ int RunFile::exeCall(int lineNumber)
         }
     }
   // Q_EMIT FileNameChanged(this->fileName);
+    emit FileNameChanged1(this->fileName);
     return 0;
 }
 int RunFile::exeRet(int lineNumber)
@@ -647,6 +658,10 @@ int RunFile::exeRet(int lineNumber)
     {
     	//从文件链表中读取最后一个，回复其信息，并且将它的信息从链表中移除
         SubFile sub;
+        if(subList.isEmpty())
+        {
+            return 0;
+        }
         sub = subList.first();
         subList.removeFirst();
         this->fileName = sub.fileName;
@@ -661,6 +676,7 @@ int RunFile::exeRet(int lineNumber)
             return false;
         }
     }
+    emit FileNameChanged1(this->fileName);
     //Q_EMIT FileNameChanged(this->fileName);
     return 0;
 }
@@ -672,6 +688,7 @@ int RunFile::exeNop(int lineNumber)
 int RunFile::exeEnd(int lineNumber)
 {
    // Q_EMIT FileClosed();
+    emit FileClosed1();
     return 0;
 }
 

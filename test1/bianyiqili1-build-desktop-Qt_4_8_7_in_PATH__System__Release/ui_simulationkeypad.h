@@ -119,7 +119,7 @@ public:
     {
         if (SimulationKeypad->objectName().isEmpty())
             SimulationKeypad->setObjectName(QString::fromUtf8("SimulationKeypad"));
-        SimulationKeypad->resize(888, 355);
+        SimulationKeypad->resize(867, 372);
         QFont font;
         font.setPointSize(9);
         SimulationKeypad->setFont(font);

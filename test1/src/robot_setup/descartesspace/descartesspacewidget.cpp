@@ -763,13 +763,13 @@ void DescartesSpaceWidget::page_display(int num)//轴键、
     label->setText("1/2");
 
         variate_value[0]->setText(settings.value("descartesspace"+QString::number(num,10)+"/笛卡尔运动下限",0).toString());
-        variate_value[1]->setText(settings.value("descartesspace1"+QString::number(num,10)+"/descartesminoffset",0).toString());
-        variate_value[2]->setText(settings.value("descartesspace1"+QString::number(num,10)+"/descartesmax",0).toString());
-        variate_value[3]->setText(settings.value("descartesspace1"+QString::number(num,10)+"/descartesmaxoffset",0).toString());
-        variate_value[4]->setText(settings.value("descartesspace1"+QString::number(num,10)+"/velocitymax",0).toString());
-        variate_value[5]->setText(settings.value("descartesspace1"+QString::number(num,10)+"/addsubtractvelocity",0).toString());
-        variate_value[6]->setText(settings.value("descartesspace1"+QString::number(num,10)+"/velocitymaxmovp",0).toString());
-        variate_value[7]->setText(settings.value("descartesspace1"+QString::number(num,10)+"/addsubtractvelocitymovp",0).toString());
+        variate_value[1]->setText(settings.value("descartesspace"+QString::number(num,10)+"/descartesminoffset",0).toString());
+        variate_value[2]->setText(settings.value("descartesspace"+QString::number(num,10)+"/descartesmax",0).toString());
+        variate_value[3]->setText(settings.value("descartesspace"+QString::number(num,10)+"/descartesmaxoffset",0).toString());
+        variate_value[4]->setText(settings.value("descartesspace"+QString::number(num,10)+"/velocitymax",0).toString());
+        variate_value[5]->setText(settings.value("descartesspace"+QString::number(num,10)+"/addsubtractvelocity",0).toString());
+        variate_value[6]->setText(settings.value("descartesspace"+QString::number(num,10)+"/velocitymaxmovp",0).toString());
+        variate_value[7]->setText(settings.value("descartesspace"+QString::number(num,10)+"/addsubtractvelocitymovp",0).toString());
 }
 
 void DescartesSpaceWidget::createIni()
@@ -926,8 +926,8 @@ void DescartesSpaceWidget::descartes_data_init()
     for(int i=1;i<7;++i)
     {
         qDebug()<<"sssssss";
-        CTRL_SetLinearPositiveLimit(settings.value("descartesspace1/velocitymax",0).toDouble(),i);
-        CTRL_SetLinearNegativeLimit(settings.value("descartesspace1/addsubtractvelocity",0).toDouble(),i);
+        CTRL_SetLinearPositiveLimit(settings.value("descartesspace"+QString::number(i,10)+"/velocitymax",0).toDouble(),i);
+        CTRL_SetLinearNegativeLimit(settings.value("descartesspace1"+QString::number(i,10)+"/addsubtractvelocity",0).toDouble(),i);
 
 //        CTRL_GetLinearPositiveLimit(positivelimit,i);
 //        CTRL_GetLinearNegativeLimit(negativelimit,i);

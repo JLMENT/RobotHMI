@@ -9,7 +9,7 @@
 #include "programXmlLine.h"
 #include "xmlTagName.h"
 
-#define OP_PROGRAM_DEBUG            0x00
+#define OP_PROGRAM_DEBUG            0x03
 #define OP_PROGRAM_DEBUG_ERROR      0x01
 #define OP_PROGRAM_DEBUG_INFOR      0x02
 
