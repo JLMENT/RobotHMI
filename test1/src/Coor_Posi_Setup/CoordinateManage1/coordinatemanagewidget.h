@@ -1063,6 +1063,7 @@ private slots:
     {
         MotionFeedback fb;
         int i,j,a,ret,k;
+        int motion_return_value;
         QStringList listIni;
         timer->stop();
         switch (CMBtn) {
@@ -1279,7 +1280,14 @@ private slots:
                         }
                         else if(i==1)
                         {
-                            CTRL_UserCalibration(&threejointpoints1,&tool1,&user1);
+                            motion_return_value = CTRL_UserCalibration(&threejointpoints1,&tool1,&user1);
+
+                            if(motion_return_value==0x620)
+                            {
+                                QMessageBox::warning(this,"warning","calculation faild!",QMessageBox::Ok,QMessageBox::Ok);
+                                recorver_points_init_status();
+                                return;
+                            }
                             position_data[1]->setText(QString::number(user1.x));
                             position_data[2]->setText(QString::number(user1.y));
                             position_data[3]->setText(QString::number(user1.z));

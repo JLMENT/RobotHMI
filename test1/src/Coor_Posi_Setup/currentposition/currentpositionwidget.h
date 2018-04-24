@@ -13,6 +13,7 @@
 #include <QColor>
 
 #include <QEvent>
+#include "usr_motion_api/usr_motion_api.h"
 
 class CurrentPositionWidget : public QWidget
 {

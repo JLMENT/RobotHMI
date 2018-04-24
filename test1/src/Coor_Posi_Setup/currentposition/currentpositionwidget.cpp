@@ -92,7 +92,7 @@ CurrentPositionWidget::CurrentPositionWidget(QWidget *parent)
 
     this->setLayout(vb);
 
-    myTimerId = startTimer(3000);
+    myTimerId = startTimer(300);
 
 }
 
@@ -103,13 +103,34 @@ CurrentPositionWidget::~CurrentPositionWidget()
 
 void CurrentPositionWidget::timerEvent(QTimerEvent *event)
 {
+
+
+
     if(event->timerId()==myTimerId)
     {
-        for(int i=0;i<8;++i)
-        {
-            joint_position[i+1]->setText("ddd");
-            other_position[i]->setText("d111");
-        }
+//        for(int i=0;i<8;++i)
+//        {
+//            joint_position[i+1]->setText("ddd");
+//            other_position[i]->setText("d111");
+//        }
+
+        MotionFeedback fb;
+        CTRL_GetMotionStatus(&fb);
+        joint_position[1]->setText(QString::number(fb.jointCmd.j1));
+        joint_position[2]->setText(QString::number(fb.jointCmd.j2));
+        joint_position[3]->setText(QString::number(fb.jointCmd.j3));
+        joint_position[4]->setText(QString::number(fb.jointCmd.j4));
+        joint_position[5]->setText(QString::number(fb.jointCmd.j5));
+        joint_position[6]->setText(QString::number(fb.jointCmd.j6));
+
+        other_position[0]->setText(QString::number(fb.positionCmd.x));
+        other_position[1]->setText(QString::number(fb.positionCmd.y));
+        other_position[2]->setText(QString::number(fb.positionCmd.z));
+        other_position[3]->setText(QString::number(fb.positionCmd.a));
+        other_position[4]->setText(QString::number(fb.positionCmd.b));
+        other_position[5]->setText(QString::number(fb.positionCmd.c));
+
+
     }
     else{
         QWidget::timerEvent(event);

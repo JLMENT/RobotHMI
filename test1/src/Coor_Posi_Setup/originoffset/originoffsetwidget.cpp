@@ -69,9 +69,16 @@ void OriginOffsetWidget::ensure_encorde_origin()
 {
     qlonglong dl1 = 0;
     qlonglong dl2 = 0;
-    qlonglong *dl,*getdl;
+    qlonglong feedback_value = 0;
+    qlonglong *dl,*getdl;//*require_feedback_value;
+
+    MotionFeedback fb;
+    CTRL_GetMotionStatus(&fb);
+
+
     dl = &dl1;
     getdl = &dl2;
+    //require_feedback_value = &dl3;
     timer->stop();
     switch (QMessageBox::question(this,"确定要标定零位","确定要标定零位",QMessageBox::Ok|QMessageBox::Cancel,QMessageBox::Cancel)) {
     case QMessageBox::Ok:
@@ -90,29 +97,51 @@ void OriginOffsetWidget::ensure_encorde_origin()
 
             if(selectoa->encord_aix[i])
             {
+                feedback_value = fb.servoEncoderValue[i];
+                CTRL_SetOriginOffset(feedback_value,i);
                 CTRL_GetOriginOffset(getdl,i);
-                encorder_data->set_encorder_data(i,*getdl);
-                encorder_data->get_encorder_data(i,dl);
-                qDebug()<<*dl;
-                //CTRL_SetOriginOffset(*dl,i);
-                //CTRL_GetOriginOffset(getdl,i);
-                if(*dl==*getdl)
+                if(feedback_value == *getdl)
                 {
-                   //写入数据成功
-                    //标定轴状态
-                    //save specity axis encorder data
-                    encorder_data->save_encorder_data(i,*dl);
-
+                    encorder_data->set_encorder_data(i,feedback_value);
+                    encorder_data->save_encorder_data(i,feedback_value);
                     origin_status->set_specify_axis_status(i);
-
-                    CTRL_SetOriginOffset(*dl,i);
-                    qDebug()<<"写入数据成功";
                 }
                 else
                 {
                     QMessageBox::warning(this,"警告","轴值写入失败请重试",QMessageBox::Ok|QMessageBox::Cancel,QMessageBox::Ok);
                     return;
                 }
+
+
+
+
+
+
+
+
+//                CTRL_GetOriginOffset(getdl,i);
+//                encorder_data->set_encorder_data(i,*getdl);
+//                encorder_data->get_encorder_data(i,dl);
+//                qDebug()<<*dl;
+//                //CTRL_SetOriginOffset(*dl,i);
+//                //CTRL_GetOriginOffset(getdl,i);
+//                if(*dl==*getdl)
+//                {
+//                   //写入数据成功
+//                    //标定轴状态
+//                    //save specity axis encorder data
+//                    encorder_data->save_encorder_data(i,*dl);
+
+//                    origin_status->set_specify_axis_status(i);
+
+//                    CTRL_SetOriginOffset(*dl,i);
+//                    qDebug()<<"写入数据成功";
+//                }
+//                else
+//                {
+//                    QMessageBox::warning(this,"警告","轴值写入失败请重试",QMessageBox::Ok|QMessageBox::Cancel,QMessageBox::Ok);
+//                    return;
+//                }
 
             }
         }
