@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Alarm_data>
+	<DATA time="12018-04-25-09:29:55.345" code="985" information="Waiting system init done..." />
+	<DATA time="22018-04-25-09:29:48.977" code="2024" information="Emergency stop button pressed!" />
+	<DATA time="32018-04-25-09:29:48.912" code="2010" information="TeachFile modify error!" />
+	<DATA time="42018-04-25-09:29:55.345" code="985" information="Waiting system init done..." />
+	<DATA time="52018-04-25-09:29:48.977" code="2024" information="Emergency stop button pressed!" />
+	<DATA time="62018-04-25-09:29:48.912" code="2010" information="TeachFile modify error!" />
+	<DATA time="72018-04-25-09:29:55.345" code="985" information="Waiting system init done..." />
+	<DATA time="82018-04-25-09:29:48.977" code="2024" information="Emergency stop button pressed!" />
+	<DATA time="92018-04-25-09:29:48.912" code="2010" information="TeachFile modify error!" />
+</Alarm_data>

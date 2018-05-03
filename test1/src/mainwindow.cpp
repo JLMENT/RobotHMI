@@ -83,7 +83,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stackedWidget->addWidget(origin_offset);
     ui->stackedWidget->addWidget(coordinatemanagewidget);
     ui->stackedWidget->addWidget(toolmanagewidget);
-    ui->stackedWidget->addWidget(currentpositionwidget);
+    ui->stackedWidget->addWidget(currentpositionwidget);//37
+    ui->stackedWidget->addWidget(alarmwidget);//38
     ui->stackedWidget->setCurrentIndex(37);
 
 
@@ -713,7 +714,8 @@ void MainWindow::userrightspage()
 
 void MainWindow::warninghistorypage()
 {
-    ui->stackedWidget->setCurrentIndex(16);
+    //ui->stackedWidget->setCurrentIndex(16);
+    ui->stackedWidget->setCurrentIndex(38);
 }
 
 void MainWindow::editionpage()

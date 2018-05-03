@@ -1,0 +1,14 @@
+<?xml version="1.0" standalone="no"?>
+<Alarm_information>
+	<2001>Program content listshow error!</2001>
+	<2002>No ID position point!</2002>
+	<2003>Teachfile excute error!</2003>
+	<2004>Listinsert not allowed before nop!</2004>
+	<2005>Listinsert check invalid!</2005>
+	<2006>TeachFile excute need reset!</2006>
+	<2007>TeachFile editfail!</2007>
+	<2008>TeachFile inserterror!</2008>
+	<2009>TeachFile delete error!</2009>
+	<2010>TeachFile modify error!</2010>
+	<2011>TeachFile not find!</2011>
+</Alarm_information>

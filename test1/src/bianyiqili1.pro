@@ -114,6 +114,7 @@ include ($$PWD/Coor_Posi_Setup/originoffset/originoffset.pri)
 include ($$PWD/Coor_Posi_Setup/currentposition/currentposition.pri)
 include ($$PWD/Coor_Posi_Setup/CoordinateManage1/CoordinateManage1.pri)
 include ($$PWD/Coor_Posi_Setup/Toolmanage/Toolmanage.pri)
+include ($$PWD/system_information/Alarm_Module1/Alarm_Module1.pri)
 
 
 

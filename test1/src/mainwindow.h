@@ -45,6 +45,7 @@
 #include "coordinatemanagewidget.h"
 #include "toolmanagewidget.h"
 #include "currentpositionwidget.h"
+#include "alarmwidget.h"
 
 //class OtherSetup;
 class ThreadData : public QThread
@@ -235,6 +236,9 @@ private:
 
     //Current_Position
     CurrentPositionWidget *currentpositionwidget = new CurrentPositionWidget;
+
+    //Alarm_widget
+    AlarmWidget *alarmwidget = new AlarmWidget;
 
 
 private slots:
