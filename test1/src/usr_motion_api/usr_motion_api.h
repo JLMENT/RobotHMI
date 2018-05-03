@@ -7,7 +7,7 @@
 #include "motionConfig.h"
 #include "motionFeedback.h"
 #include "posemath.h"
-
+#include "motionErrorType.h"
 
 
 #ifdef __cplusplus
@@ -20,9 +20,10 @@ extern VRobotMotionCommand  *motCmd ;
 extern MotionCommandQueue *interpList ;
 extern VRobotMotionCommand *emcmotCommand;
 extern MotionFeedback *motionFb;
+extern ErrorChanel *errorBuffer;
 
-extern int CTRL_ServoReset(void);			//Å·Î»Å·å±¨
-extern int CTRL_ServoEnable(int enable);	//Å·Ê¹Ü£enbale Îª0Ê¹ Îª1Ê¹
+extern int CTRL_ServoReset(void);			//ËÅ·ş¸´Î»£¬ÓÃÓÚËÅ·şÇå±¨¾¯
+extern int CTRL_ServoEnable(int enable);	//ËÅ·şÊ¹ÄÜ£¬enbale Îª0£ºÏÂÊ¹ÄÜ Îª1£ºÉÏÊ¹ÄÜ
 
 
 extern int CTRL_USR_Init(void);
@@ -30,105 +31,99 @@ extern void CTRL_USR_Exit(void);
 
 
 
-extern int CTRL_AddSingleAxisMove(SingleAxisMove *singleMove); //Ë¶
-extern int CTRL_AddJointMove(JointMoveInformation *jointMove,u32 lineNumber,u32 fileNumber);		//Ø½Ú²å²¹movj
-extern int CTRL_AddLinearMove(LinearMoveInformation *movl,u32 lineNumber,u32 fileNumber);			//Ö±ß²å²¹ÕµÎ»Ã¹Ø½Ú±Ê¾
+extern int CTRL_AddSingleAxisMove(SingleAxisMove *singleMove); //µ¥ÖáÔË¶¯
+extern int CTRL_AddJointMove(JointMoveInformation *jointMove,u32 lineNumber,u32 fileNumber);		//¹Ø½Ú²å²¹movj
+extern int CTRL_AddLinearMove(LinearMoveInformation *movl,u32 lineNumber,u32 fileNumber);			//Ö±Ïß²å²¹£¬ÖÕµãÎ»ÖÃÓÃ¹Ø½Ú±íÊ¾
 extern int CTRL_AddCircularMove(CircularMoveInformation *movC,u32 lineNumber,u32 fileNumber);
-extern void CTRL_MovementStop();										//Ë¶Í£Ö¹ÒºÎ´Ö´ĞµÒ²Ö´
-extern int CTRL_AddDescartesLinearMove(LinearDescartesMoveInformation *movDL,u32 lineNumber,u32 fileNumber);//Ö±ß²å²¹ÕµÎ»x/y/zÊ¾
-extern int CTRL_AddDescartesCircularMove(CircularDescartesMoveInformation *movDC,u32 lineNumber,u32 fileNumber);//Ô²å²¹Ä¿Î»Ê¹ÃµÑ¿Î»Öµ
+extern void CTRL_MovementStop();										//ÔË¶¯Í£Ö¹£¬²¢ÇÒºóÃæÎ´Ö´ĞĞµÄÃüÁîÒ²²»»áÖ´ĞĞ
+extern int CTRL_AddDescartesLinearMove(LinearDescartesMoveInformation *movDL,u32 lineNumber,u32 fileNumber);//Ö±Ïß²å²¹£¬ÖÕµãÎ»ÖÃÓÃx/y/z±íÊ¾¡£
+extern int CTRL_AddDescartesCircularMove(CircularDescartesMoveInformation *movDC,u32 lineNumber,u32 fileNumber);//Ô²»¡²å²¹£¬Ä¿±êÎ»ÖÃÊ¹ÓÃµÑ¿¨¶ûÎ»ÖÃÖµ
 extern void CTRL_GetJointValue(JointPoint * joint);
 extern double CTRL_GetJointValueFor3DTest(int jointNumber);
 extern double CTRL_GetPositionValue(int axis);
 
 
-extern int CTRL_GetTCPInUserSpace(PointPose *pos,JointPoint *joint,UserCoordianteInformation* user,ToolCoordianteInformation* tool);//Ø½Î»Ã£ã¹¤ß¼ËµÃ»ÏµÂµÎ»Ë¡
- extern int CTRL_GetTCPInUserSpaceInMatrix(PmHomogeneous *pos,JointPoint *joint,UserCoordianteInformation* user,ToolCoordianteInformation* tool); // Ú²Ê¹
+extern int CTRL_GetTCPInUserSpace(PointPose *pos,JointPoint *joint,UserCoordianteInformation* user,ToolCoordianteInformation* tool);//ÊäÈë¹Ø½ÚÎ»ÖÃ£¬¼ÆËã¹¤¾ß¼â¶ËµãÔÚÓÃ»§×ø±êÏµÏÂµÄÎ»×Ë¡£
+ extern int CTRL_GetTCPInUserSpaceInMatrix(PmHomogeneous *pos,JointPoint *joint,UserCoordianteInformation* user,ToolCoordianteInformation* tool); // Èí¼şÄÚ²¿Ê¹ÓÃ
 
-extern int CTRL_GetTCPInJoint(JointPoint *joint,PointPose *point,UserCoordianteInformation* user,ToolCoordianteInformation* tool);//ÖªÎ»Ë£Ø½Î»Ã½ÅµjointĞ¡ÖµÎª0Ê±Ê¾Ğ§
+extern int CTRL_GetTCPInJoint(JointPoint *joint,PointPose *point,UserCoordianteInformation* user,ToolCoordianteInformation* tool);//ÒÑÖª¹¤¾ßÎ»×Ë£¬·´½â¹Ø½ÚÎ»ÖÃ½á¹û·Åµ½jointÖĞ¡£·µ»ØÖµÎª0Ê±±íÊ¾½á¹ûÓĞĞ§¡£
 extern int CTRL_GetTCPInJointInMatrix(JointPoint *joint,JointPoint *preJoint,PmHomogeneous *point,UserCoordianteInformation* user,ToolCoordianteInformation* tool);
 
 extern int CTRL_GetMotionStatus(MotionFeedback * fb); 
 //extern	 void CTRL_SetSocket(char * IP, int port, int cycleTime);
-//jp , Ã»Ä¹Ø½ÖµÏ¢out Ã»Ïµx/y/z/a/bcÖµ
+//jp , ÓÃ»§ÊäÈëµÄÈı¸öµãµÄ¹Ø½ÚÖµĞÅÏ¢£¬out ¼ÆËã³öµÄÓÃ»§×ø±êÏµx/y/z/a/bcµÄÖµ¡£
 extern int CTRL_UserCalibration(ThreeJointPoints *jp, ToolCoordianteInformation *tool,UserCoordianteInformation *out);
+
+//¹¤¾ß×ø±êÏµ×Ô¶¯Ğ£×¼¡£jp£¬ÊäÈëµÄ6¸öµãµÄ¹Ø½ÚÖµ¡£pointNumber£¬²»ÄÜĞ¡ÓÚ6£¬ÔİÊ±Ö»Ö§³ÖÊäÈë6£¬out£¬¼ÆËã³öµÄ¹¤¾ß×ø±êÏµĞÅÏ¢¡£
 extern int CTRL_ToolCalibration(JointPoint *jp,int pointNumber,ToolCoordianteInformation *out);
 
-//Å·Ô­Æ«Öµoffset Ê¾Ä±ÖµaxisÊ¾:1-6
+
+
+//ÉèÖÃËÅ·şµç»úµÄÔ­µãÆ«ÒÆÖµ¡£ÆäÖĞoffset ±íÊ¾µç»úµÄ±àÂëÆ÷·´À¡Âö³åÖµ£¬axis±íÊ¾ÖáºÅ:1-6¡£
 extern int CTRL_SetOriginOffset(s64 offset,u32 axis);
-//È¡Ô­Æ«ÖµaxisÎª(1-6)offsetÆ«Öµ
+//»ñÈ¡Ô­µãÆ«ÒÆÖµ£¬axisÎªÖáºÅ(1-6)£¬offset·µ»ØÆ«ÒÆÖµ¡£
 extern int CTRL_GetOriginOffset(s64 * offset,u32 axis);
-
-
-//Ã»Ë², length : Ë²È£num: Ë²
+//ÉèÖÃ»úÆ÷ÈËÁ¬¸Ë²ÎÊı, length : Á¬¸Ë²ÎÊı³¤¶È£¬num: Á¬¸Ë²ÎÊıºÅÂë
 extern int CTRL_SetPUMA(f64 length,u32 num);
 
-//Ã»Ë², length : Ë²È£num: Ë²
+//»ñµÃ»úÆ÷ÈËÁ¬¸Ë²ÎÊı, length : Á¬¸Ë²ÎÊı³¤¶È£¬num: Á¬¸Ë²ÎÊıºÅÂë
 extern int CTRL_GetPUMA(f64 *length,u32 num);
 
-
-
-//Ê¾Ê±Ù¶È£velocity: ÃµÙ¶Öµ
+//ÉèÖÃÊ¾½ÌÊ±µÄÏßËÙ¶È£¬velocity: ÉèÖÃµÄËÙ¶ÈÖµ
 extern int CTRL_SetTeachLinearVelocity(f64 velocity);
-//Ê¾Ê±Ù¶È£velocity: ÃµÙ¶Öµ
+
+//»ñµÃÊ¾½ÌÊ±µÄÏßËÙ¶È£¬velocity: ÉèÖÃµÄËÙ¶ÈÖµ
 extern int CTRL_GetTeachLinearVelocity(f64 *velocity);
-//Ö±Ë¶(MOVL) Ù¶È£velocity: ÃµÙ¶Öµ
+//ÉèÖÃÖ±ÏßÔË¶¯(MOVL) µÄ×î´óËÙ¶È£¬velocity: ÉèÖÃµÄËÙ¶ÈÖµ
 extern int CTRL_SetLinearMaxVelocity(f64 velocity);
-//Ö±Ë¶(MOVL) Ù¶È£velocity: ÃµÙ¶Öµ
+//»ñµÃÖ±ÏßÔË¶¯(MOVL) µÄ×î´óËÙ¶È£¬velocity: ÉèÖÃµÄËÙ¶ÈÖµ
 extern int CTRL_GetLinearMaxVelocity(f64 *velocity);
-//Ö±Ë¶(MOVL) Ä¼Ù¶È£acc: ÃµÄ¼Ù¶Öµ
+//ÉèÖÃÖ±ÏßÔË¶¯(MOVL) µÄ¼ÓËÙ¶È£¬acc: ÉèÖÃµÄ¼ÓËÙ¶ÈÖµ
 extern int CTRL_SetLinearMoveAcc(f64 acc);
-//Ö±Ë¶(MOVL) Ä¼Ù¶È£acc: ÃµÄ¼Ù¶Öµ
+//»ñµÃÖ±ÏßÔË¶¯(MOVL) µÄ¼ÓËÙ¶È£¬acc: ÉèÖÃµÄ¼ÓËÙ¶ÈÖµ
 extern int CTRL_GetLinearMoveAcc(f64 *acc);
-//×ªË¶Ù¶È£velocity: ÃµÙ¶Öµ
+//ÉèÖÃĞı×ªÔË¶¯µÄËÙ¶È£¬velocity: ÉèÖÃµÄËÙ¶ÈÖµ
 extern int CTRL_SetRotateMoveVelocity(f64 velocity);
-//×ªË¶Ù¶È£velocity: ÃµÙ¶Öµ
+//»ñµÃĞı×ªÔË¶¯µÄËÙ¶È£¬velocity: ÉèÖÃµÄËÙ¶ÈÖµ
 extern int CTRL_GetRotateMoveVelocity(f64 *velocity);
-//×ªË¶Ä¼Ù¶È£acc:ÃµÄ¼Ù¶Öµ
+//ÉèÖÃĞı×ªÔË¶¯µÄ¼ÓËÙ¶È£¬acc:ÉèÖÃµÄ¼ÓËÙ¶ÈÖµ¡£
 extern int CTRL_SetRotateMoveAcc(f64 acc);
-//×ªË¶Ä¼Ù¶È£acc:ÃµÄ¼Ù¶Öµ
+//»ñµÃĞı×ªÔË¶¯µÄ¼ÓËÙ¶È£¬acc:ÉèÖÃµÄ¼ÓËÙ¶ÈÖµ¡£
 extern int CTRL_GetRotateMoveAcc(f64 *acc);
-
-
-
-//Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:X/Y/Z/A/B/C
+//ÉèÖÃÏßĞÔÔË¶¯ÕıÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:X/Y/Z/A/B/C
 extern int CTRL_SetLinearPositiveLimit(f64 limit,u32 axis);
-//È¡Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:X/Y/Z/A/B/C
+//»ñÈ¡ÏßĞÔÔË¶¯ÕıÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:X/Y/Z/A/B/C
 extern int CTRL_GetLinearPositiveLimit(f64 *limit,u32 axis);
-//Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:X/Y/Z/A/B/C
+//ÉèÖÃÏßĞÔÔË¶¯¸ºÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:X/Y/Z/A/B/C
 extern int CTRL_SetLinearNegativeLimit(f64 limit,u32 axis);
-//È¡Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:X/Y/Z/A/B/C
+//»ñÈ¡ÏßĞÔÔË¶¯¸ºÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:X/Y/Z/A/B/C
 extern int CTRL_GetLinearNegativeLimit(f64 *limit,u32 axis);
-
-
-
-
-//Ã¹Ø½Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//ÉèÖÃ¹Ø½ÚÔË¶¯ÕıÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_SetJointPositiveLimit(f64 limit,u32 axis);
-//È¡Ø½Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//»ñÈ¡¹Ø½ÚÔË¶¯ÕıÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_GetJointPositiveLimit(f64 *limit,u32 axis);
-//Ã¹Ø½Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//ÉèÖÃ¹Ø½ÚÔË¶¯¸ºÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_SetJointNegativeLimit(f64 limit,u32 axis);
-//È¡Ø½Ë¶Ş£limit:Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//»ñÈ¡¹Ø½ÚÔË¶¯¸ºÈíÏŞ£¬limit:ÈíÏŞÊıÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_GetJointNegativeLimit(f64 *limit,u32 axis);
-//Ã¹Ø½Ë¶Ù¶È£velocity:Ù¶Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//ÉèÖÃ¹Ø½ÚÔË¶¯×î´óËÙ¶È£¬velocity:ËÙ¶ÈÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_SetJointMaxVelocity(f64 velocity,u32 axis);
-//Ã¹Ø½Ë¶Ù¶È£velocity:Ù¶Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//ÉèÖÃ¹Ø½ÚÔË¶¯×î´óËÙ¶È£¬velocity:ËÙ¶ÈÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_GetJointMaxVelocity(f64 *velocity,u32 axis);
 
-//Ã¹Ø½Ë¶Ù¶È£acc:Ù¶Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//ÉèÖÃ¹Ø½ÚÔË¶¯×î´ó¼ÓËÙ¶È£¬acc:¼ÓËÙ¶ÈÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_SetJointMaxAcc(f64 acc,u32 axis);
-//È¡Ø½Ë¶Ù¶È£acc:Ù¶Öµaxis:Ø½Úº1-6  Î´:J1-J6
+//»ñÈ¡¹Ø½ÚÔË¶¯×î´ó¼ÓËÙ¶È£¬acc:¼ÓËÙ¶ÈÖµ£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_GetJointMaxAcc(f64 *acc,u32 axis);
-//Ã¸Ø½ÚµÄ¼Ù±È£demoninator:Ù±È·Ä¸numerator:Ù±È·Ó£axis:Ø½Úº1-6  Î´:J1-J6
+//ÉèÖÃ¸÷¹Ø½ÚµÄ¼õËÙ±È£¬demoninator:¼õËÙ±È·ÖÄ¸£¬numerator:¼õËÙ±È·Ö×Ó£¬axis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_SetReductionRate(s64 demoninator, s64 numerator, u32 axis);
-//È¡Ø½ÚµÄ¼Ù±È£rate:Ù±axis:Ø½Úº1-6  Î´:J1-J6
+//»ñÈ¡¸÷¹Ø½ÚµÄ¼õËÙ±È£¬rate:¼õËÙ±Èaxis:¹Ø½ÚºÅ1-6  ÒÀ´Î´ú±í:J1-J6
 extern int CTRL_GetReductionRate(s64 *demoninator, s64 *numerator,u32 axis);
 
-//5/6Ø½ÚµÏ±
+//ÉèÖÃ5/6¹Ø½ÚµÄñîºÏ±È
 extern int CTRL_SetCoupleRate(s64 rate);
 
-//È¡5/6Ø½ÚµÏ±
+//¶ÁÈ¡5/6¹Ø½ÚµÄñîºÏ±È
 extern int CTRL_GetCoupleRate(s64 *rate);
  
 

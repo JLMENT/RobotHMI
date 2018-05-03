@@ -33,6 +33,7 @@ SOURCES += main.cpp\
     usr_motion_api/usr_motion_api.c \
     usr_motion_api/pumakin.c \
     usr_motion_api/_posemath.c \
+    usr_motion_api/motionError.c\
     xml_cancle/xmlread/runfile.cpp \
     xml_cancle/xmlread/operateprogramxml.cpp \
     tthreadtest.cpp \
@@ -75,6 +76,7 @@ HEADERS  += mainwindow.h \
     usr_motion_api/motionErrorType.h \
     usr_motion_api/pumakins.h \
     usr_motion_api/sincos.h \
+    usr_motion_api/motionError.h\
     xml_cancle/xmlread/xmlTagName.h \
     xml_cancle/xmlread/subFile.h \
     xml_cancle/xmlread/runfile.h \

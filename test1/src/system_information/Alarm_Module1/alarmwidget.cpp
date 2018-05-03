@@ -284,6 +284,13 @@ void AlarmWidget::alarmPageInit()
 
     displayCurrentPageAlarmInformation();
     m_timeId1 = startTimer(100);
+    arithmetic_arror_count = 0;
+    previous_alarm_status = 0;
+    current_alarm_status = 0;
+    if(ALARM_DEBUG_STATUS)
+    {
+        qDebug()<<"Init successs";
+    }
 //    QString str1 = requireCurrentAlarmTime();
 //    qDebug()<<str1;
 
@@ -302,9 +309,67 @@ QString AlarmWidget::requireCurrentAlarmTime()
 
 void AlarmWidget::timerEvent(QTimerEvent *event)
 {
+
+    if(ALARM_DEBUG_STATUS)
+    {
+        qDebug()<<"timestart";
+    }
+//    ErrorData errordata1;
+//    ErrorData errordatadisplay1;
+//    QString current_alarm_str;
+
+    qDebug()<<"ddddddd";
     if(event->timerId()==m_timeId1)
     {
+        qDebug()<<"timeout";
+        whether_has_error=CTRL_hasError();
+        qDebug()<<"CTRL_hasError() success";
+        if(whether_has_error==1)
+        {
+            qDebug()<<"hasError";
+            ///////////alarm data record////////////////
+            current_alarm_status = 1;
+            if(previous_alarm_status==0)
+            {
+                arithmetic_arror_count = CTRL_currrentErrorCount();
+                if(arithmetic_arror_count>0)
+                {
+                    for(int i=1;i<=arithmetic_arror_count;++i)
+                    {
+                        CTRL_readErrorAt(i,&errordata1);
+                        if(findAlarmInformation(errordata1.errorCode))
+                        {
+                            recordCurrentAlarmInformation();
+                        }
+                        else
+                        {
+                            //return errordata1 not exist!
+                        }
 
+                    }
+                }
+            }
+            ////////////////alarm data display//////////////////
+            CTRL_readErrorAt(1,&errordatadisplay1);
+            if(findAlarmInformation(errordatadisplay1.errorCode))
+            {
+                current_alarm_str = requireCurrentAlarmInformation();
+                emit current_alarm_information_sig(current_alarm_str);
+            }
+
+        }
+        else
+        {
+            previous_alarm_status=0;
+            qDebug()<<"not error";
+        }
+    }
+    else{
+        QWidget::timerEvent(event);
+    }
+    if(ALARM_DEBUG_STATUS)
+    {
+        qDebug()<<"timeevent end";
     }
 }
 

@@ -46,6 +46,11 @@
 #ifndef MOTION_DEBUG_KEY
 #define MOTION_DEBUG_KEY	2060
 #endif
+#ifndef MOTION_ERROR_KEY
+#define MOTION_ERROR_KEY	2060
+#endif
+
+
 
 MotionConfig *emcmotConfig ;
 MotionCommandBuffer *commandShmem ;
@@ -56,11 +61,12 @@ MotionFeedback *motionFb;
 MotionJointParameter *joints;
 MotionStatus *emcmotStatus;
 MotionDebug *emcmotDebug;
+ErrorChanel *errorBuffer;
 
 t_lock Mutex;
 
 
-int commandShmID,statusShmID,configShmID,feedbackShmID,jointShmID,debugShmID;
+int commandShmID,statusShmID,configShmID,feedbackShmID,jointShmID,debugShmID,errorShmID;
 
  double PUMA_A1;
  double PUMA_A2;
@@ -1733,6 +1739,25 @@ int CTRL_USR_Init(void)
 		exit(1);
 	}
 
+	/*     error 通道共享内存  */
+	
+	errorShmID=shmget((key_t)MOTION_ERROR_KEY,sizeof(ErrorChanel),IPC_CREAT);
+	if(errorShmID==-1)
+	{
+		perror("error shmget:");
+		exit(1);
+	}
+	errorBuffer= (ErrorChanel*)shmat(errorShmID,NULL,0);
+	if((int)errorBuffer == -1)
+	{
+		perror("error shmat:");
+		shmdt(errorBuffer);
+		if(shmctl(errorBuffer,IPC_RMID,0)<0)
+		{
+			perror("shmctl:");
+		}
+		exit(1);
+	}
 
 
 	 PUMA_A1=emcmotConfig->PUMA_A[0];

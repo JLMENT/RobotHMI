@@ -16,6 +16,8 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QTimerEvent>
+#include <usr_motion_api/usr_motion_api.h>
+#include <usr_motion_api/motionError.h>
 
 #include "alarm_macro.h"
 
@@ -63,6 +65,14 @@ private:
     QString requireCurrentAlarmTime();
 
     int m_timeId1;
+    int arithmetic_arror_count;
+    int current_alarm_status;
+    int previous_alarm_status;
+
+    ErrorData errordata1;
+    ErrorData errordatadisplay1;
+    QString current_alarm_str;
+    int whether_has_error;
 
 
 protected:
