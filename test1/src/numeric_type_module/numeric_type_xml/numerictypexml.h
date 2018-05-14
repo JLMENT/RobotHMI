@@ -3,6 +3,8 @@
 #include <QtXml>
 #include <QObject>
 #include <QFile>
+#include <QDir>
+#include "file_path_macro.h"
 
 class NumericTypeXml
 {

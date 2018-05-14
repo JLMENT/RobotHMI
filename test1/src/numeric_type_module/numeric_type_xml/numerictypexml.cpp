@@ -8,7 +8,19 @@ NumericTypeXml::NumericTypeXml()
 void NumericTypeXml::readxml(QString commandstr, int sequence)
 {
     qDebug()<<"readxml";
-    QFile file("/home/a/pengcheng/test1/src/numeric_type_module/numeric_type.xml");
+    QFile file;
+    if(SPECIFIED_PATHNAME==0x01)
+    {
+        QDir::setCurrent(VAR_FILE_PATH);
+        file.setFileName("numeric_type.xml");
+        //file(VAR_FILE_PATH+"numeric_type.xml");
+    }
+    else
+    {
+        //QFile file("/home/a/pengcheng/test1/src/numeric_type_module/numeric_type.xml");
+        QDir::setCurrent("/home/a/pengcheng/test1/src/numeric_type_module");
+        file.setFileName("numeric_type.xml");
+    }
     if(!file.open(QIODevice::ReadOnly|QIODevice::Text)){
         qDebug()<<"file open failure!";
         return;

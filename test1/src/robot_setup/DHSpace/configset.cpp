@@ -1,6 +1,8 @@
 #include "configset.h"
 
-QSettings ConfigSet::settrings("config.ini",QSettings::IniFormat);
+//QSettings ConfigSet::settrings("config.ini",QSettings::IniFormat);
+//QSettings ConfigSet::settrings(APPLICATION_INI_PATH+"config.ini",QSettings::IniFormat);
+QSettings ConfigSet::settrings("../iniFile/config.ini",QSettings::IniFormat);
 
 ConfigSet::ConfigSet()
 {

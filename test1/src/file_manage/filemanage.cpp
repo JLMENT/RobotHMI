@@ -10,7 +10,15 @@ void FileManage::display_source_program_list()
 {
     //QDir dir = QDir::path("/test1/bianyiqili1-build-desktop-Qt_4_8_7_in_PATH__System__Release");
     strlist.clear();
-    QDir dir = QDir::current();
+    QDir dir;
+    if(SPECIFIED_PATHNAME==0x01)
+    {
+        //dir = QDir::path(PROGRAM_FILE_PATH);
+        dir.setPath(PROGRAM_FILE_PATH);
+    }
+    {
+        dir = QDir::current();
+    }
     if(!dir.exists()){
         QMessageBox msgBox;
         msgBox.setText("does not exist!");

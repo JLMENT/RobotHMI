@@ -774,7 +774,10 @@ void DescartesSpaceWidget::page_display(int num)//轴键、
 
 void DescartesSpaceWidget::createIni()
 {
-    QSettings ss("config.ini",QSettings::IniFormat);
+    //QSettings ss("config.ini",QSettings::IniFormat);
+
+    //QSettings ss(APPLICATION_INI_PATH+"config.ini",QSettings::IniFormat);
+    QSettings ss("../iniFile/config.ini",QSettings::IniFormat);
     if(settings.value("filesexist/exist",0).toString()!="yes")
     {
         ss.beginGroup("filesexist");

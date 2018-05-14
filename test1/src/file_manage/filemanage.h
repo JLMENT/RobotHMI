@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QDirIterator>
 #include <QDir>
+#include "file_path_macro.h"
 
 class FileManage : public QObject
 {

@@ -58,20 +58,50 @@ bool AlarmWidget::recordCurrentAlarmInformation()
     QString alarm_number_str = QString::number(current_alarm_number,10);
 
     QFile file("Alarm_data.xml");
-    if(file.open(QIODevice::WriteOnly|QIODevice::Text))
+//    if(file.open(QIODevice::WriteOnly|QIODevice::Text))
+//    {
+//        QXmlStreamWriter writer(&file);
+//        writer.writeStartElement("DATA");
+//        writer.writeAttribute("time",alarm_time);
+//        writer.writeAttribute("code",alarm_number_str);
+//        writer.writeAttribute("information",current_alarm_information);
+//        writer.writeEndElement();
+//        file.close();
+//    }
+//    else
+//    {
+//        return false;
+//    }
+
+    if(!file.open(QFile::ReadOnly))
+        return false;
+    QDomDocument doc;
+    if(!doc.setContent(&file))
     {
-        QXmlStreamWriter writer(&file);
-        writer.writeStartElement("DATA");
-        writer.writeAttribute("time",alarm_time);
-        writer.writeAttribute("code",alarm_number_str);
-        writer.writeAttribute("information",current_alarm_information);
-        writer.writeEndElement();
         file.close();
-    }
-    else
-    {
         return false;
     }
+    file.close();
+    QDomElement root = doc.documentElement();
+    QDomElement data = doc.createElement("DATA");
+    QDomAttr time_attr = doc.createAttribute("time");
+    time_attr.setValue(alarm_time);
+    QDomAttr code_attr = doc.createAttribute("code");
+    code_attr.setValue(alarm_number_str);
+    QDomAttr infor_attr = doc.createAttribute("information");
+    infor_attr.setValue(current_alarm_information);
+    data.setAttributeNode(time_attr);
+    data.setAttributeNode(code_attr);
+    data.setAttributeNode(infor_attr);
+    QDomNode node  =root.lastChild();
+    root.insertAfter(data,node);
+
+    if(!file.open(QFile::WriteOnly|QFile::Truncate))
+        return false;
+    QTextStream out_stream(&file);
+    doc.save(out_stream,4);
+    file.close();
+
 }
 
 bool AlarmWidget::displayCurrentPageAlarmInformation()

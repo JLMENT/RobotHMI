@@ -1,9 +1,17 @@
 #include "systemparameterxml.h"
 #include <QDebug>
 
+
 SystemParameterXml::SystemParameterXml(QString filename)
 {
-    file = new QFile(filename+".xml");
+    if(SPECIFIED_PATHNAME==0x01)
+    {
+        file = new QFile(APPLICATION_INI_PATH+filename+".xml");
+    }
+    else
+    {
+        file = new QFile(filename+".xml");
+    }
     if(!file->open(QFile::ReadOnly|QFile::WriteOnly))
         return;
     doc = new QDomDocument;

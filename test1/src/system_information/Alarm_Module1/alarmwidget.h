@@ -29,7 +29,7 @@ class AlarmWidget : public QWidget
 public:
     AlarmWidget(QWidget *parent = 0);
     ~AlarmWidget();
-    bool findAlarmInformation(int alarm_number);
+    bool findAlarmInformation(int alarm_number); //incording to number of alarm,to find Alarm Information
     QString requireCurrentAlarmInformation();
 
     bool recordCurrentAlarmInformation();

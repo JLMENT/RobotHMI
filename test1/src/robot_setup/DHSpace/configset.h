@@ -1,6 +1,7 @@
 #ifndef CONFIGSET_H
 #define CONFIGSET_H
 #include <QSettings>
+#include "file_path_macro.h"
 
 
 

@@ -11,6 +11,7 @@
 #include "config/testinclude.h"
 #include "digetedit.h"
 #include "usr_motion_api/usr_motion_api.h"
+#include "file_path_macro.h"
 class DescartesSpaceWidget : public QWidget
 {
     Q_OBJECT

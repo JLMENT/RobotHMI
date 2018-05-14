@@ -2,6 +2,7 @@
 #define SYSTEMPARAMETERXML_H
 #include <QtXml>
 #include <QString>
+#include "file_path_macro.h"
 
 
 class SystemParameterXml
